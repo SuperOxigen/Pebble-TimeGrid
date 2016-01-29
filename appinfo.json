@@ -1,0 +1,18 @@
+{
+  "uuid": "16a1ec87-6aef-4e94-acfe-37110c7c2112",
+  "shortName": "Time-Grid",
+  "longName": "Time-Grid",
+  "companyName": "Default",
+  "versionLabel": "1.0",
+  "sdkVersion": "3",
+  "targetPlatforms": ["aplite", "basalt"],
+  "watchapp": {
+    "watchface": true
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": []
+  }
+}
