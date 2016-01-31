@@ -19,19 +19,19 @@ Ex 08:37
 
 The actual display can be modified for other uses.
 
-1. Creating __SquareGrid__
++ Creating __SquareGrid__
 
 `SquareGrid * square_grid_create(void)`
 
-2. Destroying __SquareGrid__
++ Destroying __SquareGrid__
 
 `void square_grid_destroy(SquareGrid * grid)`
 
-3. Add __SquareGrid__ to a layer
++ Add __SquareGrid__ to a layer
 
 `void square_grid_add_parent(SquareGrid * grid, Layer * parent)`
 
-4. Setting __SquareGrid__'s cell values
++ Setting __SquareGrid__'s cell values
 
 `void square_grid_set_values(SquareGrid * grid, unit8_t (*)[GRID_ROW_COUNT])`
 
@@ -55,7 +55,7 @@ Set values
 
 ```
 static void foo(void) {
-    uint8_t checker_values = { 3, 10, 3, 10 }; // Checkers board appearance
+    uint8_t checker_values[GRID_ROW_COUNT] = { 3, 10, 3, 10 }; // Checkers board appearance
     square_grid_set_values(grid, &checker_values);
 }
 ```

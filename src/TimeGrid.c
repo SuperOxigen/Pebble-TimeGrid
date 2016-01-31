@@ -6,7 +6,6 @@ static SquareGrid * grid;
 static uint8_t flipper = 0xFF;
 struct tm * curr_time = 0;
 
-
 #define BUFFER_SIZE 20
 
 static inline uint8_t char_to_uint(char c) {
@@ -70,8 +69,8 @@ static void init(void) {
     const bool animated = true;
     window_stack_push(window, animated);
 
-    grid = square_grid_create(); // Mine
-    square_grid_add_parent(grid, window_get_root_layer(window)); // Mine
+    grid = square_grid_create();
+    square_grid_add_parent(grid, window_get_root_layer(window));
 }
 
 static void deinit(void) {
