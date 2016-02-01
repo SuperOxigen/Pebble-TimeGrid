@@ -3,8 +3,9 @@
 
 static Window *window;
 static SquareGrid * grid;
-static uint8_t flipper = 0xFF;
-struct tm * curr_time = 0;
+static struct tm * curr_time;
+static bool just_time = false;
+static uint8_t just_time_count = 0;
 
 #define BUFFER_SIZE 20
 
@@ -21,7 +22,7 @@ static inline void time_string(char * buffer, size_t n) {
         strftime(buffer, n, "%H%M", curr_time);
     } else {
         strftime(buffer, n, "%l%M", curr_time);
-    }    
+    }
 }
 
 static void update_time() {
@@ -38,16 +39,48 @@ static void update_time() {
     square_grid_set_values(grid, &vbuffer);
 }
 
+static void change_padding() {
+    uint16_t padding;
+    uint8_t x, y;
+
+    if (!just_time) {
+        if (!just_time_count) {
+            for (uint8_t i = 0; i < 5; i++) {
+                x = rand() % ROW_CELL_COUNT;
+                y = rand() % GRID_ROW_COUNT;
+                padding = rand() % (GRID_CELL_EDGE - GRID_CELL_EDGE / 4) + GRID_CELL_EDGE / 4;
+                square_grid_set_cell_padding(grid, x, y, padding);
+            }
+        } else {
+            just_time_count--;
+        }
+    } else {
+        for (uint8_t x = 0; x < ROW_CELL_COUNT; x++)
+        for (uint8_t y = 0; y < GRID_ROW_COUNT; y++)
+            square_grid_set_cell_padding(grid, x, y, GRID_CELL_EDGE);
+        just_time = false;
+    }
+}
+
 static void tick_handler(struct tm * tick_time, TimeUnits units_changed) {
-    if (units_changed == SECOND_UNIT)
-        tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+    static bool toggle = true;
+    // if (units_changed == SECOND_UNIT)
+    //     tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
     curr_time = tick_time;
+    if (toggle) {
+        change_padding();
+        toggle = false;
+    } else {
+        toggle = true;
+    }
     update_time();
 }
 
 static void tap_handler(AccelAxisType axis, int32_t direction) {
-    // flipper = ~flipper;
-    // update_time();
+    if (!just_time) {
+        just_time = true;
+        just_time_count = 5;
+    }
 }
 
 static void window_load(Window *window) {
@@ -61,6 +94,7 @@ static void window_unload(Window *window) {
 }
 
 static void init(void) {
+    srand((unsigned int) window);
     window = window_create();
     window_set_window_handlers(window, (WindowHandlers) {
         .load = window_load,

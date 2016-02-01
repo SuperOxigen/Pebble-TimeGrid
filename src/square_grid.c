@@ -43,3 +43,13 @@ void square_grid_add_parent(SquareGrid * grid, Layer * parent) {
         }
     }
 }
+
+void square_grid_set_cell_padding(SquareGrid * grid, uint8_t x, uint8_t y, uint16_t padding) {
+    if (grid && y < GRID_ROW_COUNT) {
+        square_grid_row_set_cell_padding(grid->rows[y], x, padding);
+    }
+}
+
+void square_grid_reset_cell_padding(SquareGrid * grid, uint8_t x, uint8_t y) {
+    
+}

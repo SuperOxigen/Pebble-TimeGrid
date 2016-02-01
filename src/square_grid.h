@@ -12,3 +12,5 @@ SquareGrid * square_grid_create();
 void square_grid_destroy(SquareGrid *);
 void square_grid_set_values(SquareGrid *, uint8_t (*)[GRID_ROW_COUNT]);
 void square_grid_add_parent(SquareGrid *, Layer *);
+void square_grid_set_cell_padding(SquareGrid *, uint8_t, uint8_t, uint16_t);
+void square_grid_reset_cell_padding(SquareGrid *, uint8_t, uint8_t);

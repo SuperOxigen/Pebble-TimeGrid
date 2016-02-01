@@ -110,3 +110,10 @@ void square_grid_row_add_parent(SquareRow * row, Layer * parent) {
         if (row->right_padding)  layer_add_child(parent, text_layer_get_layer(row->right_padding));
     }
 }
+
+void square_grid_row_set_cell_padding(SquareRow * row, uint8_t x, uint16_t padding) {
+    if (row && x < ROW_CELL_COUNT) {
+        square_grid_cell_set_padding(row->cells[x], padding);
+    }
+}
+

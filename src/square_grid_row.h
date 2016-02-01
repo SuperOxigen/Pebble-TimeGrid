@@ -19,3 +19,5 @@ void square_grid_row_destroy(SquareRow *);
 void square_grid_row_set_value(SquareRow *, uint8_t value);
 
 void square_grid_row_add_parent(SquareRow *, Layer *);
+
+void square_grid_row_set_cell_padding(SquareRow *, uint8_t, uint16_t);
