@@ -4,17 +4,10 @@
 
 typedef enum SquareCellState { WHITE, BLACK } SquareCellState;
 
-#define GRID_CELL_EDGE 12
-
 typedef struct SquareCell {
     TextLayer * center_layer, * top_layer,
               * bottom_layer, * left_layer,
               * right_layer;
-#ifdef PBL_PLATFORM_APLITE
-    PropertyAnimation * center_prop_anim, * top_prop_anim,
-                      * bottom_prop_anim, * left_prop_anim,
-                      * right_prop_anim;
-#endif
     SquareCellState state;
     GRect rect;
     uint16_t padding;

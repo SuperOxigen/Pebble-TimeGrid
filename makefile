@@ -1,17 +1,24 @@
 COMPILER = pebble
-PHONE = 192.168.1.118
+PHONE = 10.137.134.96
 SOURCE = src
 HDRTYPE = h
 SRCTYPE = c
 BINARY = build
+CFLAGS =
 
 all: $(BINARY)
 
+force:
+	$(COMPILER) build $(CFLAGS)
+
 $(BINARY): $(SOURCE)/*.$(SRCTYPE) $(SOURCE)/*.$(HDRTYPE)
-	$(COMPILER) build
+	$(MAKE) force
 
 clean:
 	rm -r $(BINARY)/*
 
 install: $(BINARY)
 	$(COMPILER) install --phone $(PHONE)
+
+logs:
+	$(COMPILER) logs --phone $(PHONE) 

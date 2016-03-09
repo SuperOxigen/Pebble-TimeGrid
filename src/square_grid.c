@@ -51,5 +51,5 @@ void square_grid_set_cell_padding(SquareGrid * grid, uint8_t x, uint8_t y, uint1
 }
 
 void square_grid_reset_cell_padding(SquareGrid * grid, uint8_t x, uint8_t y) {
-    
+    square_grid_set_cell_padding(grid, x, y, GRID_CELL_EDGE);
 }

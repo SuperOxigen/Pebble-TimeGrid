@@ -87,13 +87,6 @@ SquareCell * square_grid_cell_create(SquareCellState state, GRect rect, uint16_t
     SquareCell * cell = malloc(sizeof(SquareCell));
 
     if (cell) {
-#ifdef PBL_PLATFORM_APLITE
-        cell->center_prop_anim = NULL;
-        cell->top_prop_anim = NULL;
-        cell->bottom_prop_anim = NULL;
-        cell->left_prop_anim = NULL;
-        cell->right_prop_anim = NULL;
-#endif
         cell->center_layer = NULL;
         cell->state = state;
         cell->rect = rect;
@@ -164,18 +157,15 @@ static void square_grid_cell_animation_started(Animation * animation, void * dat
 }
 
 static void square_grid_cell_animation_stopped(Animation * animation, bool finished, void * data) {
-    SquareCell * cell = (SquareCell *) data;
-    property_animation_destroy(cell->center_prop_anim);
-    property_animation_destroy(cell->top_prop_anim);
-    property_animation_destroy(cell->bottom_prop_anim);
-    property_animation_destroy(cell->right_prop_anim);
-    property_animation_destroy(cell->left_prop_anim);
-    cell->center_prop_anim = NULL;
-    cell->top_prop_anim = NULL;
-    cell->bottom_prop_anim = NULL;
-    cell->right_prop_anim = NULL;
-    cell->left_prop_anim = NULL;
+    if (data) {
+        property_animation_destroy((PropertyAnimation *) data);
+    }
 }
+
+static AnimationHandlers cell_anim_handler = {
+    .started = (AnimationStartedHandler) square_grid_cell_animation_started,
+    .stopped = (AnimationStoppedHandler) square_grid_cell_animation_stopped
+};
 #endif
 
 static void square_grid_cell_set_animation(SquareCell * cell, uint16_t padding) {
@@ -184,6 +174,7 @@ static void square_grid_cell_set_animation(SquareCell * cell, uint16_t padding) 
               left_to_rect, left_from_rect, right_to_rect, right_from_rect,
               center_to_rect, center_from_rect;
         Animation * center_anim, * top_anim, * bottom_anim, * right_anim, * left_anim;
+        PropertyAnimation * center_prop_anim, * top_prop_anim, * bottom_prop_anim, * right_prop_anim, * left_prop_anim;
 
         center_from_rect = square_grid_cell_get_center_rect(cell);
         top_from_rect    = square_grid_cell_get_top_rect(cell);
@@ -198,35 +189,6 @@ static void square_grid_cell_set_animation(SquareCell * cell, uint16_t padding) 
         bottom_to_rect = square_grid_cell_get_bottom_rect(cell);
         right_to_rect  = square_grid_cell_get_right_rect(cell);
         left_to_rect   = square_grid_cell_get_left_rect(cell);
-
-#ifdef PBL_PLATFORM_APLITE
-        cell->center_prop_anim = property_animation_create_layer_frame(
-            text_layer_get_layer(cell->center_layer),
-            &center_from_rect, &center_to_rect);
-        cell->top_prop_anim = property_animation_create_layer_frame(
-            text_layer_get_layer(cell->top_layer),
-            &top_from_rect, &top_to_rect);
-        cell->bottom_prop_anim = property_animation_create_layer_frame(
-            text_layer_get_layer(cell->bottom_layer),
-            &bottom_from_rect, &bottom_to_rect);
-        cell->right_prop_anim = property_animation_create_layer_frame(
-            text_layer_get_layer(cell->right_layer),
-            &right_from_rect, &right_to_rect);
-        cell->left_prop_anim = property_animation_create_layer_frame(
-            text_layer_get_layer(cell->left_layer),
-            &left_from_rect, &left_to_rect); 
-        center_anim = property_animation_get_animation(cell->center_prop_anim);
-        top_anim = property_animation_get_animation(cell->top_prop_anim);
-        bottom_anim = property_animation_get_animation(cell->bottom_prop_anim);
-        right_anim = property_animation_get_animation(cell->right_prop_anim);
-        left_anim = property_animation_get_animation(cell->left_prop_anim);
-
-        animation_set_handlers(center_anim, (AnimationHandlers) {
-            .stopped = square_grid_cell_animation_stopped,
-            .started = square_grid_cell_animation_started
-        }, cell);
-#else
-        PropertyAnimation * center_prop_anim, * top_prop_anim, * bottom_prop_anim, * right_prop_anim, * left_prop_anim;
 
         center_prop_anim = property_animation_create_layer_frame(
             text_layer_get_layer(cell->center_layer),
@@ -243,17 +205,29 @@ static void square_grid_cell_set_animation(SquareCell * cell, uint16_t padding) 
         left_prop_anim = property_animation_create_layer_frame(
             text_layer_get_layer(cell->left_layer),
             &left_from_rect, &left_to_rect);
+
         center_anim = property_animation_get_animation(center_prop_anim);
         top_anim = property_animation_get_animation(top_prop_anim);
         bottom_anim = property_animation_get_animation(bottom_prop_anim);
         right_anim = property_animation_get_animation(right_prop_anim);
         left_anim = property_animation_get_animation(left_prop_anim);
-#endif
-        animation_set_duration(center_anim, PADDING_DELAY + 1);
+
+        animation_set_duration(center_anim, PADDING_DELAY);
         animation_set_duration(top_anim, PADDING_DELAY);
         animation_set_duration(bottom_anim, PADDING_DELAY);
         animation_set_duration(right_anim, PADDING_DELAY);
         animation_set_duration(left_anim, PADDING_DELAY);
+
+#ifdef PBL_PLATFORM_APLITE
+        // Used for garbage collection of prop animations
+
+        animation_set_handlers(center_anim, cell_anim_handler, center_prop_anim);
+        animation_set_handlers(top_anim, cell_anim_handler, top_prop_anim);
+        animation_set_handlers(bottom_anim, cell_anim_handler, bottom_prop_anim);
+        animation_set_handlers(right_anim, cell_anim_handler, right_prop_anim);
+        animation_set_handlers(left_anim, cell_anim_handler, left_prop_anim);
+
+#endif
 
         animation_schedule(center_anim);
         animation_schedule(top_anim);
