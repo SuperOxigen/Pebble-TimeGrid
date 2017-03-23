@@ -1,5 +1,5 @@
 COMPILER = pebble
-PHONE = 10.137.134.96
+PHONE = 10.133.135.87
 SOURCE = src
 HDRTYPE = h
 SRCTYPE = c
@@ -20,5 +20,8 @@ clean:
 install: $(BINARY)
 	$(COMPILER) install --phone $(PHONE)
 
+emulate:
+	pebble install --emulator basalt build/Pebble-TimeGrid.pbw
+
 logs:
-	$(COMPILER) logs --phone $(PHONE) 
+	$(COMPILER) logs --phone $(PHONE)
